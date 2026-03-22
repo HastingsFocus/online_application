@@ -1,0 +1,228 @@
+const Application = require("../models/Application");
+const PDFDocument = require("pdfkit");
+const sendEmail = require("../utils/sendEmail");
+
+// ============================
+// Get All Applications (WITH SEARCH + STATUS FILTER)
+// ============================
+const getAllApplications = async (req, res) => {
+  try {
+    const search = req.query.search || "";
+    const status = req.query.status || "";
+    const searchRegex = new RegExp(search, "i");
+
+    let matchStage = {
+      $or: [
+        { "student.fullName": { $regex: searchRegex } },
+        { "student.district": { $regex: searchRegex } },
+        { "program.name": { $regex: searchRegex } },
+      ],
+    };
+
+    // 🔥 ADD STATUS FILTER
+    if (status) {
+      matchStage.status = status;
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "student",
+          foreignField: "_id",
+          as: "student",
+        },
+      },
+      { $unwind: "$student" },
+
+      {
+        $lookup: {
+          from: "programs",
+          localField: "program",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+
+      {
+        $match: matchStage,
+      },
+
+      { $sort: { createdAt: -1 } },
+    ];
+
+    const applications = await Application.aggregate(pipeline);
+
+    res.json({ applications });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching applications" });
+  }
+};
+
+// ============================
+// Get Single Application
+// ============================
+const getApplicationById = async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id)
+      .populate("student")
+      .populate("program");
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    res.json(application);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching application" });
+  }
+};
+
+// ============================
+// Update Status + Send Email
+// ============================
+const updateApplicationStatus = async (req, res) => {
+  try {
+    const appId = req.params.id;
+    const { status } = req.body;
+
+    const application = await Application.findById(appId)
+      .populate("student")
+      .populate("program");
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    application.status = status;
+    await application.save();
+
+    // ===============================
+    // SEND EMAIL IF ACCEPTED
+    // ===============================
+    if (status === "accepted") {
+      const email = application.student?.email;
+      const name = application.student?.fullName;
+
+      console.log("📧 Sending email to:", email);
+
+      const emailHTML = `
+        <h2 style="color:green;">🎉 Congratulations!</h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>
+          You have been successfully <strong>ACCEPTED</strong> into:
+        </p>
+
+        <h3>${application.program?.name}</h3>
+
+        <p>Please bring the following:</p>
+        <ul>
+          <li>Original MSCE Certificate</li>
+          <li>National ID</li>
+          <li>Bank Receipt</li>
+        </ul>
+
+        <p>We will contact you with further instructions.</p>
+
+        <br>
+
+        <p>
+          Regards,<br>
+          <strong>Admissions Office</strong>
+        </p>
+      `;
+
+      try {
+        await sendEmail(email, "🎓 Admission Offer", emailHTML);
+        console.log("✅ Email sent");
+      } catch (err) {
+        console.log("❌ Email failed:", err.message);
+      }
+    }
+
+    res.json({
+      message: "Application status updated",
+      application,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error updating status",
+      error: error.message,
+    });
+  }
+};
+
+// ============================
+// Dashboard Stats
+// ============================
+const getDashboardStats = async (req, res) => {
+  try {
+    const totalApplications = await Application.countDocuments();
+    const pending = await Application.countDocuments({ status: "pending" });
+    const accepted = await Application.countDocuments({ status: "accepted" });
+    const rejected = await Application.countDocuments({ status: "rejected" });
+
+    res.json({
+      totalApplications,
+      pending,
+      accepted,
+      rejected,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching stats" });
+  }
+};
+
+// ============================
+// Download PDF
+// ============================
+const downloadAcceptedStudents = async (req, res) => {
+  try {
+    const students = await Application.find({ status: "accepted" })
+      .populate("student")
+      .populate("program");
+
+    const doc = new PDFDocument();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=accepted_students.pdf"
+    );
+
+    doc.pipe(res);
+
+    doc.fontSize(20).text("Accepted Students", { align: "center" });
+    doc.moveDown();
+
+    students.forEach((app, index) => {
+      doc.fontSize(12).text(
+        `${index + 1}. ${app.student.fullName} - ${app.program.name}`
+      );
+    });
+
+    doc.end();
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ============================
+// EXPORTS
+// ============================
+module.exports = {
+  getAllApplications,
+  getApplicationById,
+  updateApplicationStatus,
+  getDashboardStats,
+  downloadAcceptedStudents
+};

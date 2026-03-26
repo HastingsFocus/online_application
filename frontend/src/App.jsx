@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import Applications from "./pages/admin/Applications";
 import ApplicationDetails from "./pages/admin/ApplicationsDetails";
 import AcceptedStudents from "./pages/admin/AcceptedStudents";
+import SetDeadline from "./pages/admin/SetDeadline";
 
 function App() {
   return (
@@ -72,6 +73,14 @@ function App() {
   element={
     <AdminRoute>
       <AcceptedStudents />
+    </AdminRoute>
+  }
+/>
+<Route
+  path="/admin/set-deadline"
+  element={
+    <AdminRoute>
+      <SetDeadline />
     </AdminRoute>
   }
 />

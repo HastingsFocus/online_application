@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const checkApplicationWindow = require("../middleware/checkApplicationWindow");
 
 const { 
   submitApplication, 
@@ -26,6 +27,9 @@ router.post(
     console.log("🔥 APPLICATION ROUTE HIT");
     next();
   },
+
+  // Only students can apply
+   checkApplicationWindow,
 
   // Only students can apply
   (req, res, next) => {

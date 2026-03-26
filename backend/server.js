@@ -10,6 +10,7 @@ const applicationRoutes = require("./routes/applicationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const path = require("path");
 const app = express();
+const settingsRoutes = require("./routes/settingsRoutes");
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
@@ -33,6 +34,8 @@ app.use(
 );
 
 app.use("/api/admin", adminRoutes);
+
+app.use("/api/settings", settingsRoutes);
 
 // ================= TEST ROUTE =================
 app.get("/", (req, res) => {

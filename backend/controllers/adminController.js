@@ -190,7 +190,8 @@ const downloadAcceptedStudents = async (req, res) => {
       .populate("student")
       .populate("program");
 
-    const doc = new PDFDocument();
+    const PDFDocument = require("pdfkit");
+    const doc = new PDFDocument({ margin: 50 });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -200,13 +201,73 @@ const downloadAcceptedStudents = async (req, res) => {
 
     doc.pipe(res);
 
+    // 🔥 TITLE
     doc.fontSize(20).text("Accepted Students", { align: "center" });
-    doc.moveDown();
+    doc.moveDown(2);
+
+    // 🔥 TABLE SETTINGS
+    const startX = 50;
+    let currentY = 150;
+
+    const colWidths = [50, 150, 150, 200]; // #, Name, Program, Email
+
+    // 🔥 FUNCTION TO CALCULATE ROW HEIGHT
+    const getRowHeight = (row) => {
+      let maxHeight = 0;
+
+      row.forEach((cell, i) => {
+        const cellHeight = doc.heightOfString(String(cell), {
+          width: colWidths[i] - 10,
+        });
+
+        if (cellHeight > maxHeight) {
+          maxHeight = cellHeight;
+        }
+      });
+
+      return maxHeight + 10; // padding
+    };
+
+    // 🔥 DRAW ROW FUNCTION
+    const drawRow = (y, row) => {
+      const rowHeight = getRowHeight(row);
+      let x = startX;
+
+      row.forEach((cell, i) => {
+        const width = colWidths[i];
+
+        // Draw border
+        doc.rect(x, y, width, rowHeight).stroke();
+
+        // Draw text
+        doc.text(String(cell), x + 5, y + 5, {
+          width: width - 10,
+        });
+
+        x += width;
+      });
+
+      return rowHeight;
+    };
+
+    // 🔥 HEADER
+    doc.font("Helvetica-Bold");
+    const headerHeight = drawRow(currentY, ["#", "Name", "Program", "Email"]);
+    currentY += headerHeight;
+
+    // 🔥 BODY
+    doc.font("Helvetica");
 
     students.forEach((app, index) => {
-      doc.fontSize(12).text(
-        `${index + 1}. ${app.student.fullName} - ${app.program.name}`
-      );
+      const row = [
+        index + 1,
+        app.student?.username || "N/A",
+        app.program?.name || "N/A",
+        app.student?.email || "N/A",
+      ];
+
+      const rowHeight = drawRow(currentY, row);
+      currentY += rowHeight;
     });
 
     doc.end();

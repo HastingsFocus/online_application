@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAcceptedStudents } from "../../services/adminService";
+import axios from "axios";
 
 function AcceptedStudents() {
   const [students, setStudents] = useState([]);
@@ -28,12 +29,34 @@ function AcceptedStudents() {
   };
 
   // Download PDF
-  const downloadPDF = () => {
-    window.open(
+  const downloadPDF = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
       "http://localhost:5000/api/admin/accepted-students/pdf",
-      "_blank"
+      {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-  };
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "accepted_students.pdf");
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+  } catch (error) {
+    console.error("Download error:", error);
+  }
+};
 
   if (loading) return <p>Loading...</p>;
 
@@ -80,7 +103,7 @@ function AcceptedStudents() {
             students.map((app, index) => (
               <tr key={app._id}>
                 <td>{index + 1}</td>
-                <td>{app.fullName}</td>
+                <td>{app.student?.username}</td>
                 <td>{app.program?.name}</td>
                 <td>{app.student?.email}</td>
               </tr>

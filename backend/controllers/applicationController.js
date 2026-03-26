@@ -1,5 +1,6 @@
 const Application = require("../models/Application");
 const Program = require("../models/Program");
+const Settings = require("../models/Settings");
 const fs = require("fs");
 const path = require("path");
 
@@ -11,6 +12,37 @@ const submitApplication = async (req, res, next) => {
 
   try {
     const studentId = req.user.id;
+
+    // ============================================
+    // 🔥 APPLICATION DEADLINE CHECK (CLEAN VERSION)
+    // ============================================
+    const settings = await Settings.findOne();
+
+    if (!settings) {
+      return res.status(400).json({
+        message: "Application period not set",
+      });
+    }
+
+    const now = new Date();
+    const start = new Date(settings.applicationStart);
+    const end = new Date(settings.applicationEnd);
+
+    if (now < start) {
+      return res.status(403).json({
+        message: "Applications not yet open",
+      });
+    }
+
+    if (now > end) {
+      return res.status(403).json({
+        message: "Application deadline passed",
+      });
+    }
+
+    // ============================================
+    // CONTINUE NORMAL LOGIC
+    // ============================================
 
     let {
       fullName,
@@ -25,7 +57,7 @@ const submitApplication = async (req, res, next) => {
     } = req.body;
 
     // ==============================
-    // 🔥 FIX SUBJECTS (IMPORTANT)
+    // FIX SUBJECTS
     // ==============================
     if (typeof subjects === "string") {
       subjects = JSON.parse(subjects);
@@ -37,7 +69,7 @@ const submitApplication = async (req, res, next) => {
     }));
 
     // ==============================
-    // Validate required fields
+    // VALIDATION
     // ==============================
     if (
       !fullName ||
@@ -58,19 +90,11 @@ const submitApplication = async (req, res, next) => {
     }
 
     // ==============================
-    // Uploaded Files
+    // FILES
     // ==============================
-    const passportPhoto = req.files?.passportPhoto
-      ? req.files.passportPhoto[0].filename
-      : null;
-
-    const msceCertificate = req.files?.msceCertificate
-      ? req.files.msceCertificate[0].filename
-      : null;
-
-    const bankSlip = req.files?.bankSlip
-      ? req.files.bankSlip[0].filename
-      : null;
+    const passportPhoto = req.files?.passportPhoto?.[0]?.filename || null;
+    const msceCertificate = req.files?.msceCertificate?.[0]?.filename || null;
+    const bankSlip = req.files?.bankSlip?.[0]?.filename || null;
 
     if (!passportPhoto || !msceCertificate || !bankSlip) {
       return res.status(400).json({ message: "All documents are required" });
@@ -86,7 +110,7 @@ const submitApplication = async (req, res, next) => {
     }
 
     // ==============================
-    // CALCULATE ELIGIBILITY
+    // ELIGIBILITY
     // ==============================
     let eligibilityStatus = "eligible";
     const eligibilityReasons = [];
@@ -145,7 +169,9 @@ const submitApplication = async (req, res, next) => {
   } catch (error) {
     console.error("Application submission error:", error);
 
-    // Cleanup uploaded files
+    // ==============================
+    // CLEANUP FILES IF ERROR
+    // ==============================
     if (req.files) {
       Object.values(req.files).forEach(fileArray => {
         fileArray.forEach(file => {

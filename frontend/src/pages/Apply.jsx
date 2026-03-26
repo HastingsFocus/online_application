@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { useEffect } from "react";
 
 function Apply() {
   const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => {
+  const saved = localStorage.getItem("formData");
+  return saved ? JSON.parse(saved) : {
     fullName: "",
     gender: "",
     dateOfBirth: "",
@@ -14,9 +17,12 @@ function Apply() {
     district: "",
     address: "",
     program: ""
-  });
-
-  const [subjects, setSubjects] = useState([
+  };
+});
+  
+const [subjects, setSubjects] = useState(() => {
+  const saved = localStorage.getItem("subjects");
+  return saved ? JSON.parse(saved) : [
     { name: "English", gradePoints: "" },
     { name: "Mathematics", gradePoints: "" },
     { name: "Physics", gradePoints: "" },
@@ -24,14 +30,23 @@ function Apply() {
     { name: "Biology", gradePoints: "" },
     { name: "Agriculture", gradePoints: "" },
     { name: "Chichewa", gradePoints: "" }
-  ]);
-
+  ];
+});
   const [files, setFiles] = useState({
     passportPhoto: null,
     msceCertificate: null,
     bankSlip: null
   });
 
+   useEffect(() => {
+    localStorage.setItem("formData", JSON.stringify(formData));
+  }, [formData]);
+
+  // ✅ SAVE subjects to localStorage
+  useEffect(() => {
+    localStorage.setItem("subjects", JSON.stringify(subjects));
+  }, [subjects]);
+  
   const [progress, setProgress] = useState(0);
   const [eligiblePrograms, setEligiblePrograms] = useState([]);
   const [showPrograms, setShowPrograms] = useState(false);

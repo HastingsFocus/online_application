@@ -12,9 +12,9 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [strength, setStrength] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(""); // ✅ NEW
   const [loading, setLoading] = useState(false);
 
-  // ================= PASSWORD STRENGTH CHECK =================
   const checkPasswordStrength = (password) => {
     const hasLetters = /[a-zA-Z]/.test(password);
     const hasNumbers = /[0-9]/.test(password);
@@ -26,17 +26,16 @@ function Register() {
     else setStrength("Weak");
   };
 
-  // ================= HANDLE PASSWORD INPUT =================
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
     checkPasswordStrength(value);
   };
 
-  // ================= HANDLE REGISTER =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess(""); // reset
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -52,8 +51,15 @@ function Register() {
 
     try {
       await register(username, email, password);
-      alert("Registration successful!");
-      navigate("/login");
+
+      // ✅ SET SUCCESS MESSAGE
+      setSuccess("You have been successfully registered. Redirecting to login...");
+
+      // ✅ REDIRECT AFTER 2 SECONDS
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -61,7 +67,6 @@ function Register() {
     }
   };
 
-  // ================= STRENGTH BAR COLOR =================
   const getStrengthColor = () => {
     if (strength === "Weak") return "bg-red-500";
     if (strength === "Medium") return "bg-yellow-500";
@@ -79,7 +84,11 @@ function Register() {
           Create Account
         </h2>
 
+        {/* ✅ ERROR MESSAGE */}
         {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        {/* ✅ SUCCESS MESSAGE */}
+        {success && <p className="text-green-600 mb-4">{success}</p>}
 
         {/* USERNAME */}
         <input
@@ -111,7 +120,7 @@ function Register() {
           required
         />
 
-        {/* PASSWORD STRENGTH BAR */}
+        {/* STRENGTH BAR */}
         <div className="w-full h-2 bg-gray-200 rounded mb-1">
           <div
             className={`h-2 rounded ${getStrengthColor()}`}
@@ -142,7 +151,7 @@ function Register() {
           required
         />
 
-        {/* REGISTER BUTTON */}
+        {/* BUTTON */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"

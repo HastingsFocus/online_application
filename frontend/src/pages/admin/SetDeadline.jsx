@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import API from "../../services/api"; // ✅ FIXED
+import API from "../../services/api";
 
 function SetDeadline() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // Load existing
+  // ================= LOAD EXISTING SETTINGS =================
   useEffect(() => {
-    const fetch = async () => {
+    const fetchSettings = async () => {
       try {
         const res = await API.get("/settings");
-
         if (res.data) {
           setStart(res.data.applicationStart?.slice(0, 16) || "");
           setEnd(res.data.applicationEnd?.slice(0, 16) || "");
@@ -20,58 +21,98 @@ function SetDeadline() {
       }
     };
 
-    fetch();
+    fetchSettings();
   }, []);
 
+  // ================= HANDLE SAVE =================
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
     const now = new Date();
     const s = new Date(start);
     const eDate = new Date(end);
 
     if (s < now) {
-      alert("Start date cannot be in the past");
+      setMessage("❌ Start date cannot be in the past");
       return;
     }
 
     if (eDate <= s) {
-      alert("End must be after start");
+      setMessage("❌ End date must be after start date");
       return;
     }
 
+    setLoading(true);
     try {
       await API.post("/settings", {
         applicationStart: start,
         applicationEnd: end,
       });
-
-      alert("✅ Deadline updated successfully");
+      setMessage("✅ Deadline updated successfully!");
     } catch (error) {
       console.error("Save error:", error);
-      alert("❌ Failed to update deadline");
+      setMessage("❌ Failed to update deadline");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-10">
-      <h2>Set Deadline</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="datetime-local"
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-        />
+      <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-lg relative overflow-hidden">
+        <h2 className="text-2xl font-bold mb-6 text-gray-700 text-center">
+          Set Application Deadline
+        </h2>
 
-        <input
-          type="datetime-local"
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
-        />
+        {/* Decorative Shapes */}
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-100 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-100 rounded-full opacity-30 animate-pulse"></div>
 
-        <button>Save</button>
-      </form>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+
+          {/* START DATE */}
+          <div className="flex flex-col">
+            <label className="text-gray-600 mb-1 font-medium">Start Date & Time</label>
+            <input
+              type="datetime-local"
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+              required
+            />
+          </div>
+
+          {/* END DATE */}
+          <div className="flex flex-col">
+            <label className="text-gray-600 mb-1 font-medium">End Date & Time</label>
+            <input
+              type="datetime-local"
+              value={end}
+              onChange={(e) => setEnd(e.target.value)}
+              className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+              required
+            />
+          </div>
+
+          {/* SUBMIT BUTTON */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`mt-4 py-3 rounded-xl text-white font-semibold transition transform hover:scale-105 ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            }`}
+          >
+            {loading ? "Saving..." : "Save Deadline"}
+          </button>
+
+          {/* MESSAGE */}
+          {message && (
+            <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

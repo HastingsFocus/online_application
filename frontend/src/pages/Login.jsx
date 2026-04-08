@@ -30,82 +30,90 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-96"
-      >
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Student Login
-        </h2>
+  <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md"
+    >
+      {/* TITLE */}
+      <h2 className="text-3xl font-bold text-center text-darkText mb-2">
+        Welcome Back 👋
+      </h2>
+      <p className="text-center text-gray-500 mb-6 text-sm">
+        Login to continue your application
+      </p>
 
-        {/* ERROR MESSAGE */}
-        {error && (
-          <p className="text-red-500 mb-4 text-sm">
-            {error}
-          </p>
-        )}
+      {/* ERROR */}
+      {error && (
+        <p className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm">
+          {error}
+        </p>
+      )}
 
-        {/* EMAIL INPUT */}
+      {/* EMAIL */}
+      <div className="mb-4">
+        <label className="block text-sm mb-1 text-gray-600">Email</label>
         <input
           type="email"
-          placeholder="Email"
-          className="w-full border p-2 mb-4 rounded"
+          placeholder="Enter your email"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+      </div>
 
-        {/* PASSWORD INPUT */}
-        <div className="relative mb-4">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="w-full border p-2 rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+      {/* PASSWORD */}
+      <div className="mb-4 relative">
+        <label className="block text-sm mb-1 text-gray-600">Password</label>
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Enter your password"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-2 text-sm text-gray-500"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
-
-        {/* LOGIN BUTTON */}
         <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          disabled={loading}
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-9 text-xs text-gray-500 hover:text-primary"
         >
-          {loading ? "Logging in..." : "Login"}
+          {showPassword ? "Hide" : "Show"}
         </button>
+      </div>
 
-        {/* FORGOT PASSWORD LINK */}
-        <p className="text-center mt-3 text-sm">
-          <Link
-            to="/forgot-password"
-            className="text-blue-600 hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </p>
+      {/* LOGIN BUTTON */}
+      <button
+        type="submit"
+        className="w-full bg-primary text-white p-2 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
-        {/* REGISTER LINK */}
-        <p className="text-sm text-center mt-4">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 font-semibold">
-            Register
-          </Link>
-        </p>
+      {/* LINKS */}
+      <div className="text-center mt-4 text-sm">
+        <Link
+          to="/forgot-password"
+          className="text-primary hover:underline"
+        >
+          Forgot Password?
+        </Link>
+      </div>
 
-      </form>
-    </div>
-  );
+      <p className="text-sm text-center mt-4">
+        Don't have an account?{" "}
+        <Link
+          to="/register"
+          className="text-accent font-semibold hover:underline"
+        >
+          Register
+        </Link>
+      </p>
+    </form>
+  </div>
+);
 }
-
 export default Login;

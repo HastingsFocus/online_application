@@ -226,296 +226,269 @@ const [subjects, setSubjects] = useState(() => {
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "20px auto", padding: "10px" }}>
-      <h2>Student Application</h2>
+  <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
 
-      <div style={{ background: "#eee", height: "20px", margin: "10px 0", borderRadius: "10px", overflow: "hidden" }}>
+      {/* HEADER */}
+      <h2 className="text-3xl font-bold text-darkText mb-2">
+        Student Application 🎓
+      </h2>
+      <p className="text-gray-500 mb-6">
+        Complete your application step by step
+      </p>
+
+      {/* PROGRESS */}
+      <div className="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
         <div
-          style={{
-            background: progress === 100 ? "#28a745" : "#17a2b8",
-            height: "100%",
-            width: `${progress}%`,
-            transition: "width 0.3s ease-in-out"
-          }}
-        ></div>
+          className={`h-3 transition-all duration-500 ${
+            progress === 100 ? "bg-green-500" : "bg-primary"
+          }`}
+          style={{ width: `${progress}%` }}
+        />
       </div>
-      <p>Application Progress: <b>{progress}%</b></p>
+      <p className="text-sm text-gray-600 mb-6">
+        Progress: <span className="font-semibold">{progress}%</span>
+      </p>
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <form onSubmit={handleSubmit} className="space-y-8">
+
         {/* PERSONAL INFO */}
-        <h3>Personal Information</h3>
+        <div>
+          <h3 className="text-xl font-semibold mb-4 text-darkText">
+            Personal Information
+          </h3>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Full Name</label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          />
-        </div>
+          <div className="grid md:grid-cols-2 gap-4">
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Gender</label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Date of Birth</label>
-          <input
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Phone</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>District</label>
-          <select
-            name="district"
-            value={formData.district}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", padding: "8px" }}
-            required
-          >
-            <option value="">Select District</option>
-            {malawiDistricts.map((district) => (
-              <option key={district} value={district}>
-                {district}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Address</label>
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", minHeight: "60px", padding: "8px" }}
-            required
-          />
-        </div>
-
-        {/* SUBJECTS - Now first before program */}
-        <h3>MSCE Subjects</h3>
-        <p style={{ fontSize: "14px", color: "#666", marginBottom: "15px" }}>
-          Please enter your MSCE grade points (1-9, where 1 is highest)
-        </p>
-        
-        {subjects.map((subject, index) => (
-          <div 
-            key={subject.name} 
-            style={{ 
-              marginBottom: "15px", 
-              padding: "15px", 
-              border: "1px solid #ddd", 
-              borderRadius: "4px",
-              background: "#f9f9f9"
-            }}
-          >
-            <div style={{ marginBottom: "10px" }}>
-              <label style={{ fontWeight: "bold" }}>{subject.name}</label>
-            </div>
-            
             <div>
-              <label>Grade Points</label>
+              <label className="block text-sm text-gray-600 mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Gender
+              </label>
               <select
-                value={subject.gradePoints}
-                onChange={(e) => handleSubjectChange(index, "gradePoints", e.target.value)}
-                style={{ display: "block", width: "100%", padding: "8px" }}
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
                 required
               >
-                <option value="">Select Points</option>
-                {gradePoints.map((point) => (
-                  <option key={point} value={point}>
-                    {point} {point === 1 ? "(Highest)" : point === 9 ? "(Lowest)" : ""}
-                  </option>
+                <option value="">Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Phone
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                District
+              </label>
+              <select
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                required
+              >
+                <option value="">Select District</option>
+                {malawiDistricts.map((district) => (
+                  <option key={district}>{district}</option>
                 ))}
               </select>
             </div>
-          </div>
-        ))}
 
-        {/* Check Eligibility Button */}
-        <button 
-          type="button" 
-          onClick={checkEligibility} 
-          style={{ 
-            marginBottom: "20px", 
-            padding: "10px 20px",
-            background: "#17a2b8",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-            width: "100%"
-          }}
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm text-gray-600 mb-1">
+              Address
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              required
+            />
+          </div>
+        </div>
+
+        {/* SUBJECTS */}
+        <div>
+          <h3 className="text-xl font-semibold mb-2 text-darkText">
+            MSCE Subjects
+          </h3>
+
+          <div className="space-y-4">
+            {subjects.map((subject, index) => (
+              <div key={subject.name} className="p-4 border rounded-xl bg-gray-50">
+                <label className="block text-sm font-semibold mb-2">
+                  {subject.name} (Grade Points)
+                </label>
+
+                <select
+                  value={subject.gradePoints}
+                  onChange={(e) =>
+                    handleSubjectChange(index, "gradePoints", e.target.value)
+                  }
+                  className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                  required
+                >
+                  <option value="">Select Points</option>
+                  {gradePoints.map((point) => (
+                    <option key={point} value={point}>
+                      {point}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CHECK */}
+        <button
+          type="button"
+          onClick={checkEligibility}
+          className="w-full bg-accent text-white p-3 rounded-lg font-semibold hover:opacity-90 transition"
         >
           Check Program Eligibility
         </button>
 
-        {/* PROGRAM SELECTION - Shows based on eligibility */}
+        {/* PROGRAMS */}
         {showPrograms && (
-          <>
-            <h3>Program Selection</h3>
+          <div>
+            <h3 className="text-xl font-semibold mb-4 text-darkText">
+              Program Selection
+            </h3>
+
             {eligiblePrograms.length > 0 ? (
-              <div style={{ marginBottom: "20px" }}>
-                <p style={{ color: "#28a745", fontWeight: "bold" }}>
-                  You are eligible for the following programs:
-                </p>
+              <div className="space-y-3">
                 {eligiblePrograms.map((program) => (
-                  <div 
+                  <div
                     key={program.id}
-                    style={{ 
-                      marginBottom: "10px",
-                      padding: "15px",
-                      border: formData.program === program.id ? "2px solid #007bff" : "1px solid #ddd",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      background: formData.program === program.id ? "#e7f3ff" : "white"
-                    }}
-                    onClick={() => setFormData({...formData, program: program.id})}
+                    onClick={() =>
+                      setFormData({ ...formData, program: program.id })
+                    }
+                    className={`p-4 rounded-xl border cursor-pointer ${
+                      formData.program === program.id
+                        ? "border-primary bg-blue-50"
+                        : "border-gray-200"
+                    }`}
                   >
-                    <input
-                      type="radio"
-                      name="program"
-                      value={program.id}
-                      checked={formData.program === program.id}
-                      onChange={(e) => setFormData({...formData, program: e.target.value})}
-                      style={{ marginRight: "10px" }}
-                    />
-                    <strong>{program.name}</strong>
-                    <p style={{ fontSize: "14px", color: "#666", margin: "5px 0 0 25px" }}>
+                    <p className="font-semibold">{program.name}</p>
+                    <p className="text-sm text-gray-500">
                       {program.description}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={{ 
-                background: "#f8d7da", 
-                color: "#721c24", 
-                padding: "15px", 
-                borderRadius: "4px", 
-                marginBottom: "20px" 
-              }}>
-                <strong>Not Eligible</strong>
-                <p style={{ margin: "5px 0 0 0" }}>
-                  Based on your grades, you are not eligible for any of our programs at this time.
-                </p>
+              <div className="bg-red-100 text-red-600 p-4 rounded-lg">
+                Not eligible for any program
               </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* DOCUMENT UPLOAD */}
-        <h3>Upload Documents</h3>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Passport Photo</label>
-          <input 
-            type="file" 
-            name="passportPhoto" 
-            onChange={handleFileChange} 
-            accept="image/*" 
-            style={{ display: "block", marginTop: "5px" }}
-            required 
-          />
-          {files.passportPhoto && (
-            <small style={{ color: "green" }}>Selected: {files.passportPhoto.name}</small>
-          )}
-        </div>
-        
-        <div style={{ marginBottom: "15px" }}>
-          <label>MSCE Certificate</label>
-          <input 
-            type="file" 
-            name="msceCertificate" 
-            onChange={handleFileChange} 
-            accept=".pdf,.jpg,.jpeg,.png" 
-            style={{ display: "block", marginTop: "5px" }}
-            required 
-          />
-          {files.msceCertificate && (
-            <small style={{ color: "green" }}>Selected: {files.msceCertificate.name}</small>
-          )}
-        </div>
-        
-        <div style={{ marginBottom: "15px" }}>
-          <label>Bank Slip</label>
-          <input 
-            type="file" 
-            name="bankSlip" 
-            onChange={handleFileChange} 
-            accept=".pdf,.jpg,.jpeg,.png" 
-            style={{ display: "block", marginTop: "5px" }}
-            required 
-          />
-          {files.bankSlip && (
-            <small style={{ color: "green" }}>Selected: {files.bankSlip.name}</small>
-          )}
+        {/* FILES */}
+        <div>
+          <h3 className="text-xl font-semibold mb-4 text-darkText">
+            Upload Documents
+          </h3>
+
+          <div className="space-y-3">
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Passport Photo
+              </label>
+              <input type="file" name="passportPhoto" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                MSCE Certificate
+              </label>
+              <input type="file" name="msceCertificate" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Bank Slip
+              </label>
+              <input type="file" name="bankSlip" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+            </div>
+
+          </div>
         </div>
 
-        <button 
-          type="submit" 
-          style={{ 
-            marginTop: "20px", 
-            padding: "12px 20px", 
-            background: "#007bff", 
-            color: "white", 
-            border: "none", 
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-            width: "100%"
-          }}
+        {/* SUBMIT */}
+        <button
+          type="submit"
+          className="w-full bg-primary text-white p-3 rounded-lg font-semibold hover:opacity-90 transition"
         >
           Submit Application
         </button>
+
       </form>
     </div>
-  );
+  </div>
+);
 }
 
 export default Apply;

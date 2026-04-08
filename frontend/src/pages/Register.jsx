@@ -75,104 +75,141 @@ function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-96"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Create Account
-        </h2>
+  <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md"
+    >
+      {/* TITLE */}
+      <h2 className="text-3xl font-bold text-center text-darkText mb-2">
+        Create Account 🚀
+      </h2>
+      <p className="text-center text-gray-500 mb-6 text-sm">
+        Start your application journey today
+      </p>
 
-        {/* ✅ ERROR MESSAGE */}
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      {/* ERROR */}
+      {error && (
+        <p className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm">
+          {error}
+        </p>
+      )}
 
-        {/* ✅ SUCCESS MESSAGE */}
-        {success && <p className="text-green-600 mb-4">{success}</p>}
+      {/* SUCCESS */}
+      {success && (
+        <p className="bg-green-100 text-green-600 p-2 rounded mb-4 text-sm">
+          {success}
+        </p>
+      )}
 
-        {/* USERNAME */}
+      {/* USERNAME */}
+      <div className="mb-3">
+        <label className="block text-sm mb-1 text-gray-600">Username</label>
         <input
           type="text"
-          placeholder="Username"
-          className="w-full border p-2 mb-3 rounded"
+          placeholder="Enter username"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+      </div>
 
-        {/* EMAIL */}
+      {/* EMAIL */}
+      <div className="mb-3">
+        <label className="block text-sm mb-1 text-gray-600">Email</label>
         <input
           type="email"
-          placeholder="Email"
-          className="w-full border p-2 mb-3 rounded"
+          placeholder="Enter email"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+      </div>
 
-        {/* PASSWORD */}
+      {/* PASSWORD */}
+      <div className="mb-2">
+        <label className="block text-sm mb-1 text-gray-600">Password</label>
         <input
           type="password"
-          placeholder="Password"
-          className="w-full border p-2 mb-2 rounded"
+          placeholder="Create password"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           value={password}
           onChange={handlePasswordChange}
           required
         />
+      </div>
 
-        {/* STRENGTH BAR */}
-        <div className="w-full h-2 bg-gray-200 rounded mb-1">
-          <div
-            className={`h-2 rounded ${getStrengthColor()}`}
-            style={{
-              width:
-                strength === "Weak"
-                  ? "33%"
-                  : strength === "Medium"
-                  ? "66%"
-                  : strength === "Strong"
-                  ? "100%"
-                  : "0%",
-            }}
-          />
-        </div>
+      {/* STRENGTH BAR */}
+      <div className="w-full h-2 bg-gray-200 rounded mb-1 overflow-hidden">
+        <div
+          className={`h-2 rounded transition-all duration-300 ${getStrengthColor()}`}
+          style={{
+            width:
+              strength === "Weak"
+                ? "33%"
+                : strength === "Medium"
+                ? "66%"
+                : strength === "Strong"
+                ? "100%"
+                : "0%",
+          }}
+        />
+      </div>
 
-        <p className="text-sm mb-3">
-          Password Strength: <b>{strength}</b>
-        </p>
+      <p className="text-xs mb-3 text-gray-600">
+        Password Strength:{" "}
+        <span
+          className={`font-semibold ${
+            strength === "Weak"
+              ? "text-red-500"
+              : strength === "Medium"
+              ? "text-yellow-500"
+              : "text-green-500"
+          }`}
+        >
+          {strength}
+        </span>
+      </p>
 
-        {/* CONFIRM PASSWORD */}
+      {/* CONFIRM PASSWORD */}
+      <div className="mb-4">
+        <label className="block text-sm mb-1 text-gray-600">
+          Confirm Password
+        </label>
         <input
           type="password"
-          placeholder="Confirm Password"
-          className="w-full border p-2 mb-4 rounded"
+          placeholder="Confirm password"
+          className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
+      </div>
 
-        {/* BUTTON */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          disabled={loading}
+      {/* BUTTON */}
+      <button
+        type="submit"
+        className="w-full bg-primary text-white p-2 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? "Creating Account..." : "Register"}
+      </button>
+
+      {/* LOGIN LINK */}
+      <p className="text-center mt-4 text-sm text-gray-600">
+        Already have an account?{" "}
+        <Link
+          to="/login"
+          className="text-accent font-semibold hover:underline"
         >
-          {loading ? "Registering..." : "Register"}
-        </button>
-
-        {/* LOGIN LINK */}
-        <p className="text-center mt-4 text-sm text-gray-600">
-          Already have an account?
-          <Link
-            to="/login"
-            className="ml-1 text-blue-600 font-semibold hover:underline"
-          >
-            Login
-          </Link>
-        </p>
-      </form>
-    </div>
-  );
+          Login
+        </Link>
+      </p>
+    </form>
+  </div>
+);
 }
 
 export default Register;

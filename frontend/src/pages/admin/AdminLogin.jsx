@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "../../services/authService"; // ✅ FIXED PATH
+import { adminLogin } from "../../services/authService";
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -9,66 +9,91 @@ function AdminLogin() {
     email: "",
     password: "",
   });
-
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Handle input
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔥 HANDLE LOGIN
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
 
     try {
       const res = await adminLogin(formData);
 
-      // ✅ SAVE TO LOCAL STORAGE
+      // Save token & user
       localStorage.setItem("token", res.token);
       localStorage.setItem("user", JSON.stringify(res.user));
 
-      // ✅ REDIRECT TO DASHBOARD
       navigate("/admin/dashboard");
-
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Login failed");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Admin Login</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <form className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl flex flex-col"
+            onSubmit={handleSubmit}>
+        
+        <h2 className="text-3xl font-bold text-center mb-2 text-darkText">
+          Admin Login 👨‍💼
+        </h2>
+        <p className="text-center text-gray-500 mb-6 text-sm">
+          Enter your admin credentials to access the dashboard
+        </p>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Admin Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+        {/* ERROR MESSAGE */}
+        {error && (
+          <p className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm text-center">
+            {error}
+          </p>
+        )}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+        {/* EMAIL */}
+        <div className="mb-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Admin Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+          />
+        </div>
 
-        <button type="submit" disabled={loading}>
+        {/* PASSWORD */}
+        <div className="mb-4">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+          />
+        </div>
+
+        {/* LOGIN BUTTON */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-primary text-white p-2 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        {/* FOOTER LINKS */}
+        <p className="text-sm text-center mt-4 text-gray-500">
+          Forgot password? <a href="/admin/forgot-password" className="text-primary hover:underline">Reset here</a>
+        </p>
       </form>
     </div>
   );

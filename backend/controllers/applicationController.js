@@ -13,9 +13,9 @@ const submitApplication = async (req, res, next) => {
   try {
     const studentId = req.user.id;
 
-    // ============================================
-    // 🔥 APPLICATION DEADLINE CHECK (CLEAN VERSION)
-    // ============================================
+    // ==============================
+    // APPLICATION WINDOW CHECK
+    // ==============================
     const settings = await Settings.findOne();
 
     if (!settings) {
@@ -40,10 +40,9 @@ const submitApplication = async (req, res, next) => {
       });
     }
 
-    // ============================================
-    // CONTINUE NORMAL LOGIC
-    // ============================================
-
+    // ==============================
+    // EXTRACT DATA
+    // ==============================
     let {
       fullName,
       gender,
@@ -53,7 +52,7 @@ const submitApplication = async (req, res, next) => {
       district,
       address,
       program,
-      subjects
+      subjects,
     } = req.body;
 
     // ==============================
@@ -63,9 +62,9 @@ const submitApplication = async (req, res, next) => {
       subjects = JSON.parse(subjects);
     }
 
-    subjects = subjects.map(subject => ({
-      ...subject,
-      gradePoints: Number(subject.gradePoints)
+    subjects = subjects.map((s) => ({
+      ...s,
+      gradePoints: Number(s.gradePoints),
     }));
 
     // ==============================
@@ -97,7 +96,9 @@ const submitApplication = async (req, res, next) => {
     const bankSlip = req.files?.bankSlip?.[0]?.filename || null;
 
     if (!passportPhoto || !msceCertificate || !bankSlip) {
-      return res.status(400).json({ message: "All documents are required" });
+      return res.status(400).json({
+        message: "All documents are required",
+      });
     }
 
     // ==============================
@@ -106,33 +107,39 @@ const submitApplication = async (req, res, next) => {
     const selectedProgram = await Program.findOne({ code: program });
 
     if (!selectedProgram) {
-      return res.status(404).json({ message: "Program not found" });
+      return res.status(404).json({
+        message: "Program not found",
+      });
     }
 
     // ==============================
-    // ELIGIBILITY
+    // ELIGIBILITY CHECK
     // ==============================
     let eligibilityStatus = "eligible";
     const eligibilityReasons = [];
 
     if (selectedProgram.allSubjectsMinPoints) {
-      subjects.forEach(subject => {
+      subjects.forEach((subject) => {
         if (subject.gradePoints > selectedProgram.allSubjectsMinPoints) {
           eligibilityStatus = "not_eligible";
-          eligibilityReasons.push(`${subject.name} exceeds allowed points`);
+          eligibilityReasons.push(
+            `${subject.name} exceeds allowed points`
+          );
         }
       });
     }
 
-    selectedProgram.requiredSubjects.forEach(required => {
-      const subject = subjects.find(s => s.name === required.name);
+    selectedProgram.requiredSubjects.forEach((required) => {
+      const subject = subjects.find((s) => s.name === required.name);
 
       if (!subject) {
         eligibilityStatus = "not_eligible";
         eligibilityReasons.push(`Missing ${required.name}`);
       } else if (subject.gradePoints > required.minPoints) {
         eligibilityStatus = "not_eligible";
-        eligibilityReasons.push(`${required.name} exceeds required points`);
+        eligibilityReasons.push(
+          `${required.name} exceeds required points`
+        );
       }
     });
 
@@ -156,26 +163,33 @@ const submitApplication = async (req, res, next) => {
       bankSlip,
       eligibilityStatus,
       status: "pending",
-      submittedAt: new Date()
+      submittedAt: new Date(),
     });
 
     await application.populate("program", "name code department");
 
-    res.status(201).json({
+    // ==============================
+    // SUCCESS RESPONSE
+    // ==============================
+    return res.status(201).json({
       message: "Application submitted successfully",
-      application
+      application,
     });
 
   } catch (error) {
-    console.error("Application submission error:", error);
+    console.error("❌ Application submission error:", error);
 
     // ==============================
     // CLEANUP FILES IF ERROR
     // ==============================
     if (req.files) {
-      Object.values(req.files).forEach(fileArray => {
-        fileArray.forEach(file => {
-          const filePath = path.join(__dirname, "../uploads", file.filename);
+      Object.values(req.files).forEach((fileArray) => {
+        fileArray.forEach((file) => {
+          const filePath = path.join(
+            __dirname,
+            "../uploads",
+            file.filename
+          );
           if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
           }
@@ -183,7 +197,9 @@ const submitApplication = async (req, res, next) => {
       });
     }
 
-    return next(error);
+    return res.status(500).json({
+      message: "Failed to submit application",
+    });
   }
 };
 
@@ -203,7 +219,7 @@ const getUserApplications = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching applications",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -218,14 +234,18 @@ const getApplicationById = async (req, res) => {
       .populate("student", "name email");
 
     if (!application) {
-      return res.status(404).json({ message: "Application not found" });
+      return res.status(404).json({
+        message: "Application not found",
+      });
     }
 
     if (
       application.student._id.toString() !== req.user.id &&
       req.user.role !== "admin"
     ) {
-      return res.status(403).json({ message: "Unauthorized" });
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
     }
 
     res.status(200).json(application);
@@ -233,7 +253,7 @@ const getApplicationById = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching application",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -241,5 +261,5 @@ const getApplicationById = async (req, res) => {
 module.exports = {
   submitApplication,
   getUserApplications,
-  getApplicationById
+  getApplicationById,
 };

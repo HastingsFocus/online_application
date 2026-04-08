@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 function ResetPassword() {
@@ -24,7 +24,6 @@ function ResetPassword() {
     return "Weak";
   };
 
-  // ================= STRENGTH BAR COLOR =================
   const getStrengthColor = () => {
     if (strength === "Weak") return "bg-red-500";
     if (strength === "Medium") return "bg-yellow-500";
@@ -61,7 +60,6 @@ function ResetPassword() {
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-
     } catch (err) {
       setError(err.response?.data?.message || "Password reset failed");
     } finally {
@@ -70,76 +68,91 @@ function ResetPassword() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-96"
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md flex flex-col"
       >
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Reset Password
+        <h2 className="text-3xl font-bold text-center text-darkText mb-2">
+          Reset Your Password 🔑
         </h2>
+        <p className="text-center text-gray-500 mb-6 text-sm">
+          Enter your new password below to reset your account.
+        </p>
 
+        {/* ERROR */}
         {error && (
-          <p className="text-red-500 mb-4 text-sm">
+          <p className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm text-center">
             {error}
           </p>
         )}
 
+        {/* SUCCESS MESSAGE */}
         {message && (
-          <p className="text-green-600 mb-4 text-sm">
+          <p className="bg-green-100 text-green-700 p-2 rounded mb-4 text-sm text-center">
             {message}
           </p>
         )}
 
         {/* NEW PASSWORD */}
-        <input
-          type="password"
-          placeholder="New Password"
-          className="w-full border p-2 mb-2 rounded"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setStrength(checkPasswordStrength(e.target.value));
-          }}
-          required
-        />
-
-        {/* STRENGTH BAR */}
-        <div className="h-2 w-full mb-2 rounded bg-gray-200">
-          <div
-            className={`h-2 rounded ${getStrengthColor()}`}
-            style={{
-              width:
-                strength === "Weak"
-                  ? "33%"
-                  : strength === "Medium"
-                  ? "66%"
-                  : strength === "Strong"
-                  ? "100%"
-                  : "0%",
+        <div className="mb-4">
+          <input
+            type="password"
+            placeholder="New Password"
+            className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setStrength(checkPasswordStrength(e.target.value));
             }}
+            required
           />
+          {/* STRENGTH BAR */}
+          <div className="h-2 w-full mt-2 rounded bg-gray-200">
+            <div
+              className={`h-2 rounded ${getStrengthColor()}`}
+              style={{
+                width:
+                  strength === "Weak"
+                    ? "33%"
+                    : strength === "Medium"
+                    ? "66%"
+                    : strength === "Strong"
+                    ? "100%"
+                    : "0%",
+              }}
+            />
+          </div>
+          <p className="text-sm mt-1 text-gray-600">Strength: {strength || "—"}</p>
         </div>
-        <p className="text-sm mb-4 text-gray-600">Strength: {strength || "—"}</p>
 
         {/* CONFIRM PASSWORD */}
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          className="w-full border p-2 mb-4 rounded"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+        <div className="mb-4">
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
 
         {/* SUBMIT BUTTON */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
           disabled={loading}
+          className="w-full bg-primary text-white p-2 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
         >
           {loading ? "Resetting..." : "Reset Password"}
         </button>
+
+        {/* LINKS */}
+        <div className="text-center mt-4 text-sm">
+          <Link to="/login" className="text-primary hover:underline">
+            Back to Login
+          </Link>
+        </div>
       </form>
     </div>
   );

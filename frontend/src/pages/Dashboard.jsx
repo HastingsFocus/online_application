@@ -3,17 +3,18 @@ import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import API from "../services/api";
 
+import bg1 from "../assets/images/IMG_6363-scaled.jpg";
+import bg2 from "../assets/images/IMG_6369-scaled.jpg";
+
 function Dashboard() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    return <p>Error: AuthContext missing</p>;
-  }
-
-  const { user, logout, loading } = context;
+  const { user, logout, loading } = useContext(AuthContext);
 
   const [settings, setSettings] = useState(null);
   const [status, setStatus] = useState("");
+  const [timeLeft, setTimeLeft] = useState({});
+  const [bgIndex, setBgIndex] = useState(0);
+
+  const backgrounds = [bg1, bg2];
 
   // ==============================
   // FETCH SETTINGS
@@ -24,11 +25,21 @@ function Dashboard() {
         const res = await API.get("/settings");
         setSettings(res.data);
       } catch (error) {
-        console.error("Error fetching settings:", error);
+        console.error(error);
       }
     };
-
     fetchSettings();
+  }, []);
+
+  // ==============================
+  // BACKGROUND SLIDER
+  // ==============================
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // ==============================
@@ -37,87 +48,115 @@ function Dashboard() {
   useEffect(() => {
     if (!settings) return;
 
-    const interval = setInterval(updateStatus, 1000);
+    const interval = setInterval(() => {
+      const now = new Date();
+      const start = new Date(settings.applicationStart);
+      const end = new Date(settings.applicationEnd);
+
+      if (now < start) {
+        setStatus("⏳ Applications not yet open");
+        return;
+      }
+
+      if (now > end) {
+        setStatus("❌ Applications closed");
+        return;
+      }
+
+      const diff = end - now;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      setTimeLeft({ days, hours, minutes });
+      setStatus("🔥 Applications Open");
+    }, 1000);
+
     return () => clearInterval(interval);
   }, [settings]);
 
-  const updateStatus = () => {
-    if (!settings) return;
+  if (loading) return <p>Loading...</p>;
 
-    const now = new Date();
-    const start = new Date(settings.applicationStart);
-    const end = new Date(settings.applicationEnd);
-
-    if (now < start) {
-      setStatus("⏳ Applications not yet open");
-      return;
-    }
-
-    if (now > end) {
-      setStatus("❌ Applications closed");
-      return;
-    }
-
-    const diff = end - now;
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-    setStatus(`🔥 Open - ${days}d ${hours}h ${minutes}m left`);
-  };
-
-  // ==============================
-  // CHECK IF OPEN
-  // ==============================
   const now = new Date();
-
   let isOpen = false;
 
   if (settings) {
     const start = new Date(settings.applicationStart);
     const end = new Date(settings.applicationEnd);
-
     isOpen = now >= start && now <= end;
   }
 
-  // ==============================
-  // LOADING
-  // ==============================
-  if (loading) return <p>Loading...</p>;
-
-  // ==============================
-  // UI
-  // ============================
   return (
-    <div className="p-10">
-      <h1>Welcome {user?.name || "Student"}</h1>
+    <div className="relative min-h-screen text-white overflow-hidden">
 
-      <p>{status}</p>
+      {/* BACKGROUND IMAGE */}
+      <div
+        className="absolute inset-0 transition-all duration-1000"
+        style={{
+          backgroundImage: `url(${backgrounds[bgIndex]})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
 
-      {/* 🔥 APPLY BUTTON LOGIC */}
-      {isOpen ? (
-  <Link
-    to={user ? "/apply" : "/login"}
-    className="bg-blue-600 text-white px-4 py-2 rounded"
-  >
-    Apply Now
-  </Link>
-) : (
-  <button
-    disabled
-    className="bg-gray-400 text-white px-4 py-2 rounded"
-  >
-    Apply Closed
-  </button>
-)}
+      {/* DARK OVERLAY */}
+      <div className="absolute inset-0 bg-black/60" />
 
-      {/* OTHER BUTTONS */}
-      <div className="mt-4">
+      {/* CONTENT */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center">
+
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Welcome, {user?.name || "Student"} 👋
+        </h1>
+
+        <p className="text-lg text-gray-200 mb-6 max-w-xl">
+          Start your journey in health sciences. Apply now and take the first step toward a successful medical career.
+        </p>
+
+        {/* STATUS */}
+        <p className="text-xl font-semibold mb-6">{status}</p>
+
+        {/* COUNTDOWN */}
+        {isOpen && (
+          <div className="flex gap-4 mb-8">
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
+              <p className="text-2xl font-bold">{timeLeft.days}</p>
+              <p className="text-sm">Days</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
+              <p className="text-2xl font-bold">{timeLeft.hours}</p>
+              <p className="text-sm">Hours</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
+              <p className="text-2xl font-bold">{timeLeft.minutes}</p>
+              <p className="text-sm">Minutes</p>
+            </div>
+          </div>
+        )}
+
+        {/* BUTTON */}
+        {isOpen ? (
+          <Link
+            to={user ? "/apply" : "/login"}
+            className="bg-primary px-6 py-3 rounded-xl font-semibold text-lg hover:scale-105 transition"
+          >
+            Apply Now 🚀
+          </Link>
+        ) : (
+          <button
+            disabled
+            className="bg-gray-500 px-6 py-3 rounded-xl text-lg"
+          >
+            Applications Closed
+          </button>
+        )}
+
+        {/* LOGOUT */}
         {user && (
           <button
             onClick={logout}
-            className="bg-red-600 text-white px-4 py-2 rounded"
+            className="mt-6 text-sm underline text-gray-300 hover:text-white"
           >
             Logout
           </button>

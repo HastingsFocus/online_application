@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboardStats } from "../../services/adminService";
-import { FaBars, FaCalendarAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaCalendarAlt, FaSignOutAlt, FaUsers, FaCheck, FaTimes, FaClock } from "react-icons/fa";
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -9,7 +9,6 @@ function AdminDashboard() {
     rejected: 0,
     pending: 0,
   });
-
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -20,7 +19,6 @@ function AdminDashboard() {
   const fetchStats = async () => {
     try {
       const data = await getDashboardStats();
-
       setStats({
         total: data.totalApplications,
         accepted: data.accepted,
@@ -34,137 +32,89 @@ function AdminDashboard() {
     }
   };
 
-  // 🔥 LOGOUT FUNCTION
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/admin/login";
   };
 
-  if (loading) return <p>Loading dashboard...</p>;
+  if (loading) return <p className="text-center mt-10">Loading dashboard...</p>;
 
   return (
-    <div style={{ padding: "20px", position: "relative" }}>
+    <div className="min-h-screen bg-gray-50 p-6">
 
-      {/* 🔥 TOP BAR */}
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-        <FaBars
-          size={24}
-          style={{ cursor: "pointer" }}
-          onClick={() => setMenuOpen(!menuOpen)}
-        />
-        <h2 style={{ marginLeft: "15px" }}>Admin Dashboard</h2>
+      {/* TOP BAR */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <FaBars className="text-2xl cursor-pointer" onClick={() => setMenuOpen(!menuOpen)} />
+          <h1 className="text-2xl font-bold text-gray-700">Admin Dashboard</h1>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition"
+        >
+          <FaSignOutAlt /> Logout
+        </button>
       </div>
 
-      {/* 🔥 SIDE MENU */}
+      {/* SIDE MENU */}
       {menuOpen && (
-        <div style={menuStyle}>
-          
-          <div style={menuItemStyle}>
-            <FaCalendarAlt />
-            <a href="/admin/set-deadline" style={linkStyle}>
-              Set Application Dates
-            </a>
+        <div className="absolute top-16 left-6 bg-white shadow-lg rounded-xl p-4 w-64 z-50">
+          <div className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer">
+            <FaCalendarAlt /> 
+            <a href="/admin/set-deadline" className="text-gray-700 font-medium">Set Application Dates</a>
           </div>
-
-          <div style={menuItemStyle} onClick={handleLogout}>
-            <FaSignOutAlt />
-            <span style={linkStyle}>Logout</span>
+          <div className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer" onClick={handleLogout}>
+            <FaSignOutAlt /> 
+            <span className="text-gray-700 font-medium">Logout</span>
           </div>
-
         </div>
       )}
 
-      {/* 🔥 STATS CARDS */}
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        
-        <div style={cardStyle}>
-          <h3>Total Applications</h3>
-          <p style={numberStyle}>{stats.total}</p>
+      {/* STATS CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="bg-blue-600 text-white rounded-2xl shadow p-6 flex flex-col items-center transition transform hover:scale-105">
+          <FaUsers className="text-3xl mb-2" />
+          <h3 className="text-lg font-semibold">Total Applications</h3>
+          <p className="text-3xl font-bold">{stats.total}</p>
         </div>
 
-        <div style={{ ...cardStyle, background: "#28a745" }}>
-          <h3>Accepted</h3>
-          <p style={numberStyle}>{stats.accepted}</p>
+        <div className="bg-green-600 text-white rounded-2xl shadow p-6 flex flex-col items-center transition transform hover:scale-105">
+          <FaCheck className="text-3xl mb-2" />
+          <h3 className="text-lg font-semibold">Accepted</h3>
+          <p className="text-3xl font-bold">{stats.accepted}</p>
         </div>
 
-        <div style={{ ...cardStyle, background: "#dc3545" }}>
-          <h3>Rejected</h3>
-          <p style={numberStyle}>{stats.rejected}</p>
+        <div className="bg-red-600 text-white rounded-2xl shadow p-6 flex flex-col items-center transition transform hover:scale-105">
+          <FaTimes className="text-3xl mb-2" />
+          <h3 className="text-lg font-semibold">Rejected</h3>
+          <p className="text-3xl font-bold">{stats.rejected}</p>
         </div>
 
-        <div style={{ ...cardStyle, background: "#ffc107", color: "#000" }}>
-          <h3>Pending</h3>
-          <p style={numberStyle}>{stats.pending}</p>
+        <div className="bg-yellow-400 text-black rounded-2xl shadow p-6 flex flex-col items-center transition transform hover:scale-105">
+          <FaClock className="text-3xl mb-2" />
+          <h3 className="text-lg font-semibold">Pending</h3>
+          <p className="text-3xl font-bold">{stats.pending}</p>
         </div>
-
       </div>
 
-      {/* 🔥 QUICK ACTIONS */}
-      <div style={{ marginTop: "40px" }}>
-        <h3>Quick Actions</h3>
-
-        <div style={{ display: "flex", gap: "20px" }}>
-          <a href="/admin/applications" style={buttonStyle}>
+      {/* QUICK ACTIONS */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">Quick Actions</h2>
+        <div className="flex flex-wrap gap-4">
+          <a href="/admin/applications" className="bg-blue-600 text-white px-5 py-3 rounded-xl shadow hover:bg-blue-700 transition">
             View Applications
           </a>
-
-          <a href="/admin/accepted-students" style={buttonStyle}>
+          <a href="/admin/accepted-students" className="bg-green-600 text-white px-5 py-3 rounded-xl shadow hover:bg-green-700 transition">
             Accepted Students
+          </a>
+          <a href="/admin/rejected-students" className="bg-red-600 text-white px-5 py-3 rounded-xl shadow hover:bg-red-700 transition">
+            Rejected Students
           </a>
         </div>
       </div>
     </div>
   );
 }
-
-// 🔥 MENU STYLES
-const menuStyle = {
-  position: "absolute",
-  top: "60px",
-  left: "20px",
-  background: "#fff",
-  border: "1px solid #ccc",
-  borderRadius: "5px",
-  padding: "10px",
-  width: "220px",
-  zIndex: 1000,
-};
-
-const menuItemStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  padding: "10px",
-  cursor: "pointer",
-};
-
-const linkStyle = {
-  textDecoration: "none",
-  color: "#000",
-};
-
-// 🔥 EXISTING STYLES
-const cardStyle = {
-  flex: "1",
-  minWidth: "200px",
-  padding: "20px",
-  background: "#007bff",
-  color: "white",
-  borderRadius: "10px",
-  textAlign: "center",
-};
-
-const numberStyle = {
-  fontSize: "28px",
-  fontWeight: "bold",
-};
-
-const buttonStyle = {
-  padding: "12px 20px",
-  background: "#007bff",
-  color: "white",
-  textDecoration: "none",
-  borderRadius: "5px",
-};
 
 export default AdminDashboard;

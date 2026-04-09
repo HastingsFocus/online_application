@@ -25,29 +25,42 @@ transporter.verify((error, success) => {
 // ================= STUDENT REGISTER =================
 const registerStudent = async (req, res) => {
   try {
+    console.log("📥 Incoming request body:", req.body);
+
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
+      console.log("❌ Missing fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    console.log("🔍 Checking if user already exists...");
     const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: "Email already registered" });
 
+    if (existingUser) {
+      console.log("❌ User already exists:", email);
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    console.log("🔐 Hashing password...");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    await User.create({
+    console.log("💾 Saving user to database...");
+    const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
       role: "student",
     });
 
+    console.log("✅ User saved successfully:", newUser);
+
     res.status(201).json({ message: "Student registered successfully" });
 
   } catch (error) {
+    console.error("🔥 ERROR in registerStudent:", error.message);
+
     res.status(500).json({
       message: "Error registering student",
       error: error.message,

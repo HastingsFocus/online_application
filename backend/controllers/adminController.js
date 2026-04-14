@@ -138,12 +138,14 @@ const updateApplicationStatus = async (req, res) => {
         </p>
       `;
 
-      try {
-        await sendEmail(email, "🎓 Admission Offer", emailHTML);
-        console.log("✅ Email sent");
-      } catch (err) {
-        console.log("❌ Email failed:", err.message);
-      }
+      setImmediate(async () => {
+  try {
+    await sendEmail(email, "🎓 Admission Offer", emailHTML);
+    console.log("✅ Email sent");
+  } catch (err) {
+    console.log("❌ Email failed:", err.message);
+  }
+});
     }
 
     res.json({

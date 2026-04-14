@@ -171,10 +171,46 @@ const submitApplication = async (req, res, next) => {
     // ==============================
     // SUCCESS RESPONSE
     // ==============================
-    return res.status(201).json({
-      message: "Application submitted successfully",
-      application,
-    });
+    const responsePayload = {
+  message: "Application submitted successfully",
+  application,
+};
+
+// ==============================
+// SEND EMAIL (SAFE - NON BLOCKING)
+// ==============================
+setTimeout(() => {
+  setImmediate(async () => {
+    try {
+      // OPTIONAL: import sendEmail here if not already in file
+      const sendEmail = require("../utils/sendEmail");
+
+      const email = email; // or application.email if stored
+      const name = fullName;
+
+      if (email) {
+        const emailHTML = `
+          <h2>🎉 Application Submitted Successfully</h2>
+          <p>Dear <strong>${name}</strong>,</p>
+          <p>Your application has been received successfully.</p>
+          <p>We will notify you once it is reviewed.</p>
+        `;
+
+        await sendEmail(email, "Application Received", emailHTML);
+        console.log("📧 Application email sent");
+      }
+    } catch (err) {
+      console.log("❌ Email failed:", err.message);
+    }
+  });
+
+  console.log("📬 Email job queued in background");
+}, 0);
+
+// ==============================
+// SEND RESPONSE IMMEDIATELY
+// ==============================
+return res.status(201).json(responsePayload);
 
   } catch (error) {
     console.error("❌ Application submission error:", error);

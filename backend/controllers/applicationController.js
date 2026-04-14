@@ -9,6 +9,7 @@ const path = require("path");
 // ==============================
 const submitApplication = async (req, res, next) => {
   console.log("BODY:", req.body);
+  console.log("USER:", req.user);
 
   try {
     const studentId = req.user.id;

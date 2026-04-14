@@ -46,9 +46,9 @@ function SetDeadline() {
     setLoading(true);
     try {
       await API.post("/settings", {
-        applicationStart: start,
-        applicationEnd: end,
-      });
+  applicationStart: new Date(start).toISOString(),
+  applicationEnd: new Date(end).toISOString(),
+});
       setMessage("✅ Deadline updated successfully!");
     } catch (error) {
       console.error("Save error:", error);

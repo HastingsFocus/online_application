@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { useEffect } from "react";
+import { Plus } from "lucide-react"; // Make sure to install lucide-react or use your own icon
 
 function Apply() {
   const navigate = useNavigate();
@@ -445,35 +446,60 @@ const [subjects, setSubjects] = useState(() => {
           </div>
         )}
 
-        {/* FILES */}
+        {/* FILES - WITH PLUS ICONS */}
         <div>
           <h3 className="text-xl font-semibold mb-4 text-darkText">
             Upload Documents
           </h3>
 
           <div className="space-y-3">
-
+            {/* Passport Photo with Plus Icon */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">
                 Passport Photo
               </label>
-              <input type="file" name="passportPhoto" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+              <div className="relative">
+                <input 
+                  type="file" 
+                  name="passportPhoto" 
+                  onChange={handleFileChange} 
+                  className="w-full border p-2 rounded-lg pr-10" 
+                />
+                <Plus className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              </div>
             </div>
 
+            {/* MSCE Certificate with Plus Icon */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">
                 MSCE Certificate
               </label>
-              <input type="file" name="msceCertificate" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+              <div className="relative">
+                <input 
+                  type="file" 
+                  name="msceCertificate" 
+                  onChange={handleFileChange} 
+                  className="w-full border p-2 rounded-lg pr-10" 
+                />
+                <Plus className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              </div>
             </div>
 
+            {/* Bank Slip with Plus Icon */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">
                 Bank Slip
               </label>
-              <input type="file" name="bankSlip" onChange={handleFileChange} className="w-full border p-2 rounded-lg" />
+              <div className="relative">
+                <input 
+                  type="file" 
+                  name="bankSlip" 
+                  onChange={handleFileChange} 
+                  className="w-full border p-2 rounded-lg pr-10" 
+                />
+                <Plus className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              </div>
             </div>
-
           </div>
         </div>
 

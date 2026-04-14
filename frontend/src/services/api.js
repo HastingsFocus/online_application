@@ -1,11 +1,12 @@
 import axios from "axios";
 
 // ✅ For Vite, environment variables must be prefixed with VITE_
-// In your project root, have a .env file:
+// You can keep a .env file for local dev:
 // VITE_API_URL=http://localhost:5000/api
-// And restart the dev server after creating/editing .env
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Update this for deployment
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "https://online-application-ol5t.onrender.com/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
@@ -15,9 +16,17 @@ const API = axios.create({
 // Add token to requests
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
+
+  console.log("🔥 TOKEN BEING SENT:", token);
+  console.log("🔥 REQUEST URL:", req.baseURL + req.url);
+  console.log("🔥 HEADERS BEFORE:", req.headers);
+
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
+
+  console.log("🔥 HEADERS AFTER:", req.headers);
+
   return req;
 });
 

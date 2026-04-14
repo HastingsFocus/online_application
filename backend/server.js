@@ -30,6 +30,8 @@ app.get("/", (req, res) => {
   res.send("Student Application API Running...");
 });
 
+console.log("🔥 NEW DEPLOY ACTIVE");
+
 // ================= DATABASE =================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

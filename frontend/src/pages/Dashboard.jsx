@@ -116,24 +116,35 @@ function Dashboard() {
 
         {/* STATUS */}
         <p className="text-xl font-semibold mb-6">{status}</p>
+{/* COUNTDOWN */}
+{isOpen && (
+  <div className="flex flex-col items-center mb-8">
+    
+    {/* TIME BOXES */}
+    <div className="flex gap-4">
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24 text-center">
+        <p className="text-2xl font-bold">{timeLeft.days}</p>
+        <p className="text-sm">Days</p>
+      </div>
 
-        {/* COUNTDOWN */}
-        {isOpen && (
-          <div className="flex gap-4 mb-8">
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
-              <p className="text-2xl font-bold">{timeLeft.days}</p>
-              <p className="text-sm">Days</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
-              <p className="text-2xl font-bold">{timeLeft.hours}</p>
-              <p className="text-sm">Hours</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24">
-              <p className="text-2xl font-bold">{timeLeft.minutes}</p>
-              <p className="text-sm">Minutes</p>
-            </div>
-          </div>
-        )}
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24 text-center">
+        <p className="text-2xl font-bold">{timeLeft.hours}</p>
+        <p className="text-sm">Hrs</p>
+      </div>
+
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl w-24 text-center">
+        <p className="text-2xl font-bold">{timeLeft.minutes}</p>
+        <p className="text-sm">Minutes</p>
+      </div>
+    </div>
+
+    {/* LEFT CONTAINER */}
+    <div className="mt-3 bg-white/10 backdrop-blur-md px-6 py-2 rounded-xl">
+      <p className="font-bold text-sm tracking-wide">LEFT</p>
+    </div>
+
+  </div>
+)}
 
         {/* BUTTON */}
         {isOpen ? (

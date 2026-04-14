@@ -182,13 +182,13 @@ const submitApplication = async (req, res, next) => {
 setTimeout(() => {
   setImmediate(async () => {
     try {
-      // OPTIONAL: import sendEmail here if not already in file
       const sendEmail = require("../utils/sendEmail");
 
-      const email = email; // or application.email if stored
+      // IMPORTANT: use req.body.email safely
+      const userEmail = email;
       const name = fullName;
 
-      if (email) {
+      if (userEmail) {
         const emailHTML = `
           <h2>🎉 Application Submitted Successfully</h2>
           <p>Dear <strong>${name}</strong>,</p>
@@ -196,7 +196,7 @@ setTimeout(() => {
           <p>We will notify you once it is reviewed.</p>
         `;
 
-        await sendEmail(email, "Application Received", emailHTML);
+        await sendEmail(userEmail, "Application Received", emailHTML);
         console.log("📧 Application email sent");
       }
     } catch (err) {

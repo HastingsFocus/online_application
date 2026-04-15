@@ -28,6 +28,8 @@ router.post(
     next();
   },
 
+  /*
+
   // Only students can apply
    checkApplicationWindow,
 
@@ -40,7 +42,7 @@ router.post(
     }
     next();
   },
-
+*/
   // Upload files
   uploadApplicationFiles,
 

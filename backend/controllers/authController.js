@@ -4,9 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// 🔥 DEBUG ENV VARIABLES
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
+/*
 
 // ================= EMAIL TRANSPORT =================
 const transporter = nodemailer.createTransport({
@@ -20,7 +18,7 @@ const transporter = nodemailer.createTransport({
 transporter.verify((error, success) => {
   if (error) console.log("Transporter Error:", error);
   else console.log("Transporter Ready to Send Emails");
-});
+});*/
 
 // ================= STUDENT REGISTER =================
 const registerStudent = async (req, res) => {
@@ -167,7 +165,7 @@ const getUserProfile = async (req, res) => {
     });
   }
 };
-
+/*
 // ================= FORGOT PASSWORD =================
 const forgotPassword = async (req, res) => {
   try {
@@ -245,13 +243,12 @@ const resetPassword = async (req, res) => {
       error: error.message,
     });
   }
-};
+};  */
 
 module.exports = {
   registerStudent,
   studentLogin,
   adminLogin,
   getUserProfile, // 🔥 EXPORT THIS
-  forgotPassword,
-  resetPassword,
+  
 };

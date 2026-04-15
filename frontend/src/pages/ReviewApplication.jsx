@@ -14,37 +14,38 @@ function ReviewApplication() {
   const { formData, subjects, files } = state;
 
   const handleConfirm = async () => {
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const form = new FormData();
+  try {
+    const form = new FormData();
 
-      Object.keys(formData).forEach((key) => {
-        form.append(key, formData[key]);
-      });
+    // Append form data
+    Object.keys(formData).forEach((key) => {
+      form.append(key, formData[key]);
+    });
 
-      form.append("subjects", JSON.stringify(subjects));
+    // Append subjects
+    form.append("subjects", JSON.stringify(subjects));
 
-      form.append("passportPhoto", files.passportPhoto);
-      form.append("msceCertificate", files.msceCertificate);
-      form.append("bankSlip", files.bankSlip);
+    // Append files
+    form.append("passportPhoto", files.passportPhoto);
+    form.append("msceCertificate", files.msceCertificate);
+    form.append("bankSlip", files.bankSlip);
 
-      await API.post("/applications", form, {
-  headers: {
-    "Content-Type": "multipart/form-data",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-});
-      // go to success page
-      navigate("/success");
+    // ✅ FIXED: NO manual headers
+    await API.post("/applications", form);
 
-    } catch (err) {
-      alert("Submission failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // go to success page
+    navigate("/success");
 
+  } catch (err) {
+    console.error("❌ Submission error:", err);
+    alert(err.message || "Submission failed");
+  } finally {
+    setLoading(false);
+  }
+};
+     
   return (
   <div className="min-h-screen bg-gray-50 py-10 px-4">
     <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl">

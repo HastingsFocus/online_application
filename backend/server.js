@@ -21,7 +21,12 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ================= ROUTES =================
 app.use("/api/auth", authRoutes);
 app.use("/api/programs", programRoutes);
-app.use("/api/applications", applicationRoutes); // 🔥 (you forgot to use it)
+
+console.log("🔍 About to mount application routes");
+app.use("/api/applications", applicationRoutes);
+console.log("✅ Application routes mounted at /api/applications");
+
+/*app.use("/api/applications", applicationRoutes); // 🔥 (you forgot to use it)*/
 app.use("/api/admin", adminRoutes);
 app.use("/api/settings", settingsRoutes);
 

@@ -28,10 +28,10 @@ router.post("/admin-login", adminLogin);
 // ================= PASSWORD RESET =================
 
 // Request password reset link
-router.post("/forgot-password", forgotPassword);
+//router.post("/forgot-password", forgotPassword);
 
 // Reset password using token
-router.post("/reset-password/:token", resetPassword);
+//girouter.post("/reset-password/:token", resetPassword);
 
 // ================= GET PROFILE =================
 // Protected route to get logged-in user's profile

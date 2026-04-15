@@ -12,7 +12,8 @@ const submitApplication = async (req, res, next) => {
   console.log("USER:", req.user);
 
   try {
-    const studentId = req.user.id;
+    // ✅ FIX HERE
+    const studentId = req.user._id;
 
     // ==============================
     // APPLICATION WINDOW CHECK
@@ -246,6 +247,7 @@ const getApplicationById = async (req, res) => {
       });
     }
 
+    // SAFE ID CHECK
     if (
       application.student._id.toString() !== req.user.id &&
       req.user.role !== "admin"
@@ -264,7 +266,6 @@ const getApplicationById = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   submitApplication,
   getUserApplications,

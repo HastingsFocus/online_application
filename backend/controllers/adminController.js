@@ -83,7 +83,7 @@ const getApplicationById = async (req, res) => {
 };
 
 // ============================
-// Update Status + Send Email
+// Update Status (EMAIL DISABLED)
 // ============================
 const updateApplicationStatus = async (req, res) => {
   try {
@@ -101,53 +101,25 @@ const updateApplicationStatus = async (req, res) => {
     application.status = status;
     await application.save();
 
-    // ===============================
-    // SEND EMAIL IF ACCEPTED
-    // ===============================
+    // 🚫 EMAIL TEMPORARILY DISABLED
+    /*
     if (status === "accepted") {
       const email = application.student?.email;
       const name = application.student?.fullName;
 
-      console.log("📧 Sending email to:", email);
-
-      const emailHTML = `
-        <h2 style="color:green;">🎉 Congratulations!</h2>
-
-        <p>Dear <strong>${name}</strong>,</p>
-
-        <p>
-          You have been successfully <strong>ACCEPTED</strong> into:
-        </p>
-
-        <h3>${application.program?.name}</h3>
-
-        <p>Please bring the following:</p>
-        <ul>
-          <li>Original MSCE Certificate</li>
-          <li>National ID</li>
-          <li>Bank Receipt</li>
-        </ul>
-
-        <p>We will contact you with further instructions.</p>
-
-        <br>
-
-        <p>
-          Regards,<br>
-          <strong>Admissions Office</strong>
-        </p>
-      `;
+      const emailHTML = `...`;
 
       setImmediate(async () => {
-  try {
-    await sendEmail(email, "🎓 Admission Offer", emailHTML);
-    console.log("✅ Email sent");
-  } catch (err) {
-    console.log("❌ Email failed:", err.message);
-  }
-});
+        try {
+          await sendEmail(email, "🎓 Admission Offer", emailHTML);
+        } catch (err) {
+          console.log("❌ Email failed:", err.message);
+        }
+      });
     }
+    */
 
+    // ✅ RESPONSE MUST BE OUTSIDE COMMENT
     res.json({
       message: "Application status updated",
       application,

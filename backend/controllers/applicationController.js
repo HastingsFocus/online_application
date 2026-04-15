@@ -177,36 +177,6 @@ const submitApplication = async (req, res, next) => {
   application,
 };
 
-// ==============================
-// SEND EMAIL (SAFE - NON BLOCKING)
-// ==============================
-setTimeout(() => {
-  setImmediate(async () => {
-    try {
-      const sendEmail = require("../utils/sendEmail");
-
-      // IMPORTANT: use req.body.email safely
-      const userEmail = email;
-      const name = fullName;
-
-      if (userEmail) {
-        const emailHTML = `
-          <h2>🎉 Application Submitted Successfully</h2>
-          <p>Dear <strong>${name}</strong>,</p>
-          <p>Your application has been received successfully.</p>
-          <p>We will notify you once it is reviewed.</p>
-        `;
-
-        await sendEmail(userEmail, "Application Received", emailHTML);
-        console.log("📧 Application email sent");
-      }
-    } catch (err) {
-      console.log("❌ Email failed:", err.message);
-    }
-  });
-
-  console.log("📬 Email job queued in background");
-}, 0);
 
 // ==============================
 // SEND RESPONSE IMMEDIATELY
